@@ -1,0 +1,12 @@
+# Custom lab rules - SID range 1000000+ is reserved for local rules.
+# Copy to /var/lib/suricata/rules/local.rules (02_configure.sh does this).
+
+# --- Rules used in the five tests ---
+alert icmp any any -> $HOME_NET any (msg:"LAB ICMP Echo Request detected"; itype:8; sid:1000001; rev:1;)
+alert tcp any any -> $HOME_NET 22 (msg:"LAB SSH connection attempt"; flags:S; sid:1000002; rev:1;)
+
+# --- Optional extensions ---
+alert tcp any any -> $HOME_NET any (msg:"LAB Possible SYN scan - many SYNs"; flags:S,12; threshold:type both, track by_src, count 20, seconds 5; classtype:attempted-recon; sid:1000003; rev:1;)
+alert icmp any any -> $HOME_NET any (msg:"LAB Large ICMP echo request"; itype:8; dsize:>400; classtype:attempted-recon; sid:1000004; rev:1;)
+alert http any any -> $HOME_NET any (msg:"LAB HTTP request to /admin"; flow:established,to_server; http.uri; content:"/admin"; nocase; classtype:web-application-activity; sid:1000005; rev:1;)
+alert tcp any any -> $HOME_NET 23 (msg:"LAB Telnet connection attempt"; flags:S; classtype:attempted-recon; sid:1000006; rev:1;)
